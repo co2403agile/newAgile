@@ -1,0 +1,10 @@
+{
+  "buildings": [
+    {
+      "buildingName": "Library",
+      "floors": [
+        {"floorPrefabName": "Library0"}
+      ]
+    }
+  ]
+}
