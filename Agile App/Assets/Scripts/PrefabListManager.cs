@@ -11,7 +11,7 @@ public class PrefabListManager : MonoBehaviour
     {
         //default view
         List<object> list = new List<object>();
-        list.Add("test");
+        list.Add("test1");
         list.Add("test2");
         list.Add("test3");
         list.Add("test4");

@@ -3,7 +3,9 @@
     {
       "buildingName": "Library",
       "floors": [
-        {"floorPrefabName": "Library0"}
+        {
+			"floorPrefabName": "Library0",
+		}
       ]
     }
   ]

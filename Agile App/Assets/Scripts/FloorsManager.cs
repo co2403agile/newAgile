@@ -23,10 +23,19 @@ public class FloorsManager : MonoBehaviour
     private List<GameObject> floors = new List<GameObject>(); //holds all floors currently made
 
     private KeyValuePair<GameObject, float> transitioningObject = new KeyValuePair<GameObject, float>(); //used to hold current moving floor
-    private int transitioningDirection = 0; // 0 : floor not moving, 1 : floor adding, -1 : floor deleting
+
+
+
+
+    enum buildingState
+    {
+        AddingFloor, DeletingFloor, Nothing
+    }
+    private buildingState transitioningDirection = buildingState.Nothing;
 
     private int currentFloor = -1;
     private int targetFloor = 0;
+
 
     private float floorHeight = 0.05f;
 
@@ -37,52 +46,119 @@ public class FloorsManager : MonoBehaviour
         LoadFloorNames();
 
         //create floor selection list objects
-
+        //TODO: create floor selection list objects
 
     }
 
     // Update is called once per frame
     void Update()
     {
+        // TODO: check if raycast postion has changed and move stack
+
+
+
+
+        if (transitioningDirection == buildingState.Nothing) //if there's no active floor
+        {
+            if (currentFloor < targetFloor) // if we need to add more floors
+            {
+                transitioningDirection = buildingState.AddingFloor; //transition to the adding floor state
+
+                GameObject prefab = Resources.Load<GameObject>(PrefabNames[currentFloor + 1]); //load the next floor as a prefab
+
+                // Check if the prefab is loaded successfully
+                if (prefab != null)
+                {
+                    transitioningObject = new KeyValuePair<GameObject, float>(Instantiate(prefab), spawnOffset);
+                }
+                else
+                {
+                    //TODO: create prefab with default error asset
+                    // Handle the case where the prefab could not be loaded
+
+                }
+
+                UpdateTransitioningObject();
+            }
+            else if (currentFloor > targetFloor) // if we need to remove floors
+            {
+                transitioningDirection = buildingState.DeletingFloor; //transition to the removing floor state
+
+                // Get the index of the last item in the list
+                int lastIndex = floors.Count - 1;
+
+                // move game object to the transitioning object state
+                transitioningObject = new KeyValuePair<GameObject, float>(floors[lastIndex], 0);
+
+                // Remove the last item from the list
+                floors.RemoveAt(lastIndex);
+            }
+        }
+        else // if we're transitioning a floor in or out
+        {
+            switch (transitioningDirection)
+            {
+                case buildingState.AddingFloor: // move offset down
+                    float modifiedValueDown = Mathf.Max(0, transitioningObject.Value - spawnRate * Time.deltaTime); //calculate new position
+
+                    if (modifiedValueDown <= 0) //if the model is at the target position
+                    {
+                        currentFloor++;
+                        transitioningObject = new KeyValuePair<GameObject, float>(transitioningObject.Key, 0); //updates the object with the new offset
+                        UpdateTransitioningObject();
+
+                        //move floor onto stack
+                        floors.Add(transitioningObject.Key);
+                        transitioningObject = new KeyValuePair<GameObject, float>(); ;
+
+                        //go to idle
+                        transitioningDirection = buildingState.Nothing;
+                    }
+                    else
+                    {
+                        //move model down
+                        transitioningObject = new KeyValuePair<GameObject, float>(transitioningObject.Key, modifiedValueDown); //updates the object with the new offset
+                        UpdateTransitioningObject();
+                    }
+
+                    break;
+
+                case buildingState.DeletingFloor: //move offset up
+                    float modifiedValueUp = Mathf.Max(0, transitioningObject.Value - spawnRate * Time.deltaTime); //calculate new position
+
+                    if (modifiedValueUp >= spawnOffset) //if the model is at the target position
+                    {
+                        currentFloor--;
+
+                        //delete floor
+                        GameObject.Destroy(transitioningObject.Key);
+
+                        //go to idle
+                        transitioningDirection = buildingState.Nothing;
+                    }
+                    else
+                    {
+                        //move model down
+                        transitioningObject = new KeyValuePair<GameObject, float>(transitioningObject.Key, modifiedValueUp);
+                    }
+
+                    //Update transitioning model translation matrix to correct position
+                    UpdateTransitioningObject();
+
+                    break;
+            }
+        }
+    }
+
+    private void UpdateTransitioningObject()
+    {
         // get position, scale and rotation from input manager
         Vector3 pos = inputManager.GetPos();
         float rotation = inputManager.GetRotation();
         float scale = inputManager.GetScale();
 
-        //TODO: manage spawning of floors
-
-        if (transitioningDirection == 0) //if there's no active floor
-        {
-            if (currentFloor != targetFloor)
-            {
-                // TODO: spawn
-
-            }
-        }
-        else
-        {
-            switch (transitioningDirection)
-            {
-                case 1: // move offset down
-                    float modifiedValueDown = Mathf.Max(0, transitioningObject.Value - spawnRate * Time.deltaTime);
-                    transitioningObject = new KeyValuePair<GameObject, float>(transitioningObject.Key, modifiedValueDown);
-
-                    //TODO: check if floor is low enough to be added to stack
-
-                    break;
-
-                case -1: //move offset up
-                    float modifiedValueUp = Mathf.Max(0, transitioningObject.Value - spawnRate * Time.deltaTime);
-                    transitioningObject = new KeyValuePair<GameObject, float>(transitioningObject.Key, modifiedValueUp);
-
-                    //TODO: check if floor is high enough to be deleted
-                    
-
-                    break;
-            }
-        }
-
-        // TODO: move model(s) to position
+        pos.y += transitioningObject.Value; // add offset
+        transitioningObject.Key.transform.position = pos;
     }
 
     private void LoadFloorNames()
