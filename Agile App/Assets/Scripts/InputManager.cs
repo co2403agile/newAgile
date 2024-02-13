@@ -14,6 +14,12 @@ public class InputManager : MonoBehaviour
     private float scale = 1;
     private float rotation = 0;
 
+    private bool raycastFlag = false;
+
+    public delegate void RayCastUpdateHandler();
+    public event RayCastUpdateHandler onUpdate;
+
+
     // Start is called before the first frame update
     void Start()
     {
@@ -44,6 +50,10 @@ public class InputManager : MonoBehaviour
                 }
             }
         }
+
+        raycastFlag = true; //sets the flag to show other scripts that the user has cast a ray
+
+        onUpdate.Invoke(); // calls every function that relies on the raycast updates
     }
 
     public Vector3 GetPos() {
@@ -55,5 +65,10 @@ public class InputManager : MonoBehaviour
     }
     public float GetRotation() {
         return rotation;
+    }
+
+    public bool GetRaycastFlag()  // used when you want to check if the user has raycasted once
+    {
+        return raycastFlag;
     }
 }

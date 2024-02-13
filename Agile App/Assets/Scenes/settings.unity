@@ -1119,7 +1119,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a1e87df1dd0e2f84bae25ea1bfd19d1a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  togglePrefab: {fileID: 1949699399392101622, guid: bbec5fb9394c9ee469d8c2cf851f9d49,
+  togglePrefab: {fileID: 1949699399392101622, guid: ece9db3fca234a14dbfba20290751225,
     type: 3}
   contentParent: {fileID: 1816228249}
 --- !u!1 &1991772129

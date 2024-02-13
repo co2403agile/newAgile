@@ -375,8 +375,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 348371571}
-  - component: {fileID: 348371570}
   - component: {fileID: 348371572}
+  - component: {fileID: 348371573}
   m_Layer: 0
   m_Name: SpawnManager
   m_TagString: Untagged
@@ -384,21 +384,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &348371570
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 348371569}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0c8b6cbee21bd984481cdaade7318681, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_RaycastManager: {fileID: 1659859600}
-  m_SpawnablePrefab: {fileID: 919132149155446097, guid: 95461713d2461c648a4de8d6b159c4ab,
-    type: 3}
 --- !u!4 &348371571
 Transform:
   m_ObjectHideFlags: 0
@@ -427,6 +412,22 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_RaycastManager: {fileID: 1659859600}
+--- !u!114 &348371573
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 348371569}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 33d05945c9914df439e28dd732ca5eb5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  jsonFile: buildings
+  inputManager: {fileID: 348371572}
+  spawnOffset: 7.5
+  spawnRate: 7.5
 --- !u!1 &422218013
 GameObject:
   m_ObjectHideFlags: 0
@@ -1985,7 +1986,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e1760703bbd54c04488a8d10600262ab, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_PlanePrefab: {fileID: 1482518108476957714, guid: 915604b4f3ad8d043a46f5a49af63546,
+  m_PlanePrefab: {fileID: 1482518108476957714, guid: 435ba2e5a3b0ba341a7176d00af74a7b,
     type: 3}
   m_DetectionMode: 1
 --- !u!1 &1732878952
@@ -2254,7 +2255,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: db22e6820f79df743a2c6c8ab535cd60, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  prefab: {fileID: 3034552624046556767, guid: c35df4c560dc2b743b3ea725e10f79de, type: 3}
+  prefab: {fileID: 3034552624046556767, guid: e1c2bc06718111442a1b9335604dcc64, type: 3}
   contentParent: {fileID: 67371670}
 --- !u!1 &1912174795
 GameObject:

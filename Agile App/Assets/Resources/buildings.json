@@ -5,6 +5,9 @@
       "floors": [
         {
 			"floorPrefabName": "Library0",
+		},
+		{
+			"floorPrefabName": "Library1",
 		}
       ]
     }
