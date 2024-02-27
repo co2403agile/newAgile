@@ -1,33 +1,25 @@
 using Newtonsoft.Json.Linq;
-using System.Collections;
 using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using Unity.VisualScripting;
 using UnityEngine;
 
 public class FloorsManager : MonoBehaviour
 {
-    // TODO: get position, scale and rotation from input manager - DONE, NEEDS TESTING
-    // TODO: get current floors to be shown - DONE, NEEDS TESTING
-    // TODO: animate the tiering - DONE, NEEDS TESTING
 
     // TODO: Find building floor prefabs, save target building in playerPrefs? store building-floor mapping in json. 
 
     public string jsonFile; //file name in Resources folder
     public InputManager inputManager;
+    public PrefabListProxyManager floorsListManager;
+    
     public float spawnOffset;
     public float spawnRate; //how fast the model is spawned and deleted
 
-    private string currentBuilding = "Library"; // TODO: change to null when floor is pulled from playerprefs.
+    private string currentBuilding; // change to null when floor is pulled from playerprefs.
     private List<string> PrefabNames = new List<string>(); //this should be ordered by floor, ground floor idx 0.
 
     private List<GameObject> floors = new List<GameObject>(); //holds all floors currently made
-
     private KeyValuePair<GameObject, float> transitioningObject = new KeyValuePair<GameObject, float>(); //used to hold current moving floor
 
-
-    
     enum buildingState
     {
         AddingFloor,
@@ -38,21 +30,24 @@ public class FloorsManager : MonoBehaviour
     private buildingState transitioningDirection = buildingState.Nothing;
 
     private int currentFloor = -1;
-    private int targetFloor = 1;
-
 
     private float floorHeight = 0.07f;
 
     // Start is called before the first frame update
     void Start()
     {
+        //get the current building
+        currentBuilding = PlayerPrefs.GetString("building");
+        Debug.Log("FloorsManager::Start -> Current Building set to " + PlayerPrefs.GetString("building"));
+
         //load target prefab names from json
         LoadFloorNames();
 
         inputManager.onUpdate += UpdateModelPositions; // add UpdateModelPositions as a listener for the model positions
 
         //create floor selection list objects
-        //TODO: create floor selection list objects
+        floorsListManager.GenerateList(PrefabNames.Count);
+
     }
 
     // Update is called once per frame
@@ -62,7 +57,7 @@ public class FloorsManager : MonoBehaviour
 
         if (transitioningDirection == buildingState.Nothing) // if there's no active floor
         {
-            if (currentFloor < targetFloor && currentFloor < PrefabNames.Count-1) // if we need to add more floors, and there are more floors to add
+            if (currentFloor < floorsListManager.getTargetFloor() && currentFloor < PrefabNames.Count-1) // if we need to add more floors, and there are more floors to add
             {
                 transitioningDirection = buildingState.AddingFloor; // transition to the adding floor state
 
@@ -73,29 +68,27 @@ public class FloorsManager : MonoBehaviour
                 }
                 catch
                 {
-                    Debug.LogError("failed to load " + PrefabNames[currentFloor + 1] + " as a prefab");
+                    Debug.LogError("FloorsManager::Update -> failed to load " + PrefabNames[currentFloor + 1] + " as a prefab");
                 }
 
                 // Check if the prefab is loaded successfully
                 if (prefab != null)
                 {
-                    Debug.Log("successfully loaded " + PrefabNames[currentFloor + 1] + " as a prefab");
+                    Debug.Log("FloorsManager::Update -> successfully loaded " + PrefabNames[currentFloor + 1] + " as a prefab");
                     transitioningObject = new KeyValuePair<GameObject, float>(Instantiate(prefab), spawnOffset);
-                    Debug.Log("created floor");
                 }
                 else
                 {
                     // Handle the case where the prefab could not be loaded
-                    Debug.Log("defaulting to basic floor model");
+                    Debug.Log("FloorsManager::Update -> defaulting to basic floor model");
                     prefab = Resources.Load<GameObject>("Prefabs/" + "defaultFloor"); // load the next floor as a prefab
                     transitioningObject = new KeyValuePair<GameObject, float>(Instantiate(prefab), spawnOffset);
-                    Debug.Log("created floor");
                 }
                 UpdateTransitioningObject();
             }
-            else if (currentFloor > targetFloor) // if we need to remove floors
+            else if (currentFloor > floorsListManager.getTargetFloor()) // if we need to remove floors
             {
-                Debug.Log("need to delete a floor, moving last floor to transitioningObject");
+                Debug.Log("FloorsManager::Update -> need to delete a floor, moving last floor to transitioningObject");
 
                 transitioningDirection = buildingState.DeletingFloor; //transition to the removing floor state
 
@@ -116,11 +109,10 @@ public class FloorsManager : MonoBehaviour
                 case buildingState.AddingFloor: // move offset down
                     float modifiedValueDown =
                         transitioningObject.Value - spawnRate * Time.deltaTime; //calculate new position
-                    Debug.Log("new offset is " + modifiedValueDown);
 
                     if (modifiedValueDown <= 0) //if the model is at the target position
                     {
-                        Debug.Log("floor is at target, adding to stack...");
+                        Debug.Log("FloorsManager::Update -> floor is at target, adding to stack...");
 
                         currentFloor++;
                         transitioningObject = new KeyValuePair<GameObject, float>(transitioningObject.Key, 0); //updates the object with the new offset
@@ -144,14 +136,11 @@ public class FloorsManager : MonoBehaviour
                     break;
 
                 case buildingState.DeletingFloor: //move offset up
-                    float modifiedValueUp =
-                        transitioningObject.Value + spawnRate * Time.deltaTime; //calculate new position
-
-                    Debug.Log("new offset is " + modifiedValueUp);
+                    float modifiedValueUp = transitioningObject.Value + spawnRate * Time.deltaTime; //calculate new position
 
                     if (modifiedValueUp >= spawnOffset) //if the model is at the target position
                     {
-                        Debug.Log("floor is at target, deleting floor");
+                        Debug.Log("FloorsManager::Update -> floor is at target, deleting floor");
 
                         currentFloor--;
 
@@ -164,12 +153,8 @@ public class FloorsManager : MonoBehaviour
                     else
                     {
                         //move model down
-                        transitioningObject =
-                            new KeyValuePair<GameObject, float>(transitioningObject.Key, modifiedValueUp);
-                        UpdateTransitioningObject();
-
+                        transitioningObject = new KeyValuePair<GameObject, float>(transitioningObject.Key, modifiedValueUp); UpdateTransitioningObject();
                     }
-
                     break;
             }
         }
@@ -224,7 +209,7 @@ public class FloorsManager : MonoBehaviour
         }
         else
         {
-            Debug.LogError(jsonFile + " file could not be loaded!");
+            Debug.LogError("FloorsManager::LoadFloorNames -> " + jsonFile + " file could not be loaded!");
             return;
         }
 
@@ -232,27 +217,31 @@ public class FloorsManager : MonoBehaviour
 
         if (buildingsArray != null) // if the json is successfully read in
         {
-            Debug.Log("buildings successfully parsed!");
+            Debug.Log("FloorsManager::LoadFloorNames -> buildings successfully parsed!");
             foreach (JObject buildingObject in buildingsArray)
             {
                 if (buildingObject["buildingName"]?.ToString() == currentBuilding)
                 {
-                    Debug.Log(currentBuilding + " has been found.");
+                    Debug.Log("FloorsManager::LoadFloorNames -> " + currentBuilding + " has been found.");
 
                     JArray floorsArray = (JArray)buildingObject["floors"];
-                    Debug.Log(floorsArray?.Count + " floors: ...");
 
                     foreach (JObject floor in floorsArray)
                     {
-                        Debug.Log(floor["floorPrefabName"]?.ToString());
+                        Debug.Log("FloorsManager::LoadFloorNames -> " + floor["floorPrefabName"]?.ToString());
                         PrefabNames.Add(floor["floorPrefabName"]?.ToString());
                     }
+                }
+
+                if (PrefabNames.Count == 0)  // if there were no floors or building found
+                {
+                    Debug.LogWarning("FloorsManager::LoadFloorNames -> Failed to find floors or building!");
                 }
             }
         }
         else
         {
-            Debug.LogError("Failed to parse buildings data");
+            Debug.LogError("FloorsManager::LoadFloorNames -> Failed to parse buildings data");
         }
     }
 }

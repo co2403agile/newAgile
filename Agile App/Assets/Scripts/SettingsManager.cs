@@ -18,6 +18,8 @@ public class SettingsManager : MonoBehaviour
     private bool isSetupCompleted = false;
 
     private List<Dictionary<string, object>> settingsList = new List<Dictionary<string, object>>();
+    private string settingsVersion;
+
 
     void Start()
     {
@@ -29,20 +31,53 @@ public class SettingsManager : MonoBehaviour
         OnSetupCompleted?.Invoke();
     }
 
+    private bool checkVersion()
+    {
+        JObject defaultJsonObject = null;
+        JObject persistentJsonObject = null;
+
+        TextAsset jsonTextAsset = Resources.Load<TextAsset>(jsonFile); // Load in the JSON file as a TextAsset
+        if (jsonTextAsset != null) //check if the data has been read correctly
+        {
+            defaultJsonObject = JObject.Parse(jsonTextAsset.text); // Parse the text as a json object
+        }
+        else
+        {
+            return false;
+        }
+
+        string json = File.ReadAllText(Path.Combine(Application.persistentDataPath, jsonFile + ".json"));
+        persistentJsonObject = JObject.Parse(json);
+
+        if (persistentJsonObject["version"] != null && (string)persistentJsonObject["version"] == (string)defaultJsonObject["version"])
+        {
+            Debug.Log("SettingsManager::checkVersion -> settings are same versions");
+            return true;
+        }
+        else
+        {
+            Debug.LogWarning("SettingsManager::checkVersion -> settings are different versions");
+            return false;
+        }
+
+    }
+
     /// <summary>
     /// function that loads the settings in from a json file
     /// </summary>
     public void PopulateOptions()
     {
+
         string filePath = Path.Combine(Application.persistentDataPath, jsonFile + ".json"); // persistent path
         JObject jsonObject = null;
 
-        if (File.Exists(filePath)) //if we already have a persistent json file use that instead
+        if (File.Exists(filePath) && checkVersion()) //if we already have a persistent json file and its the correct version
         {
             string json = File.ReadAllText(filePath);
             jsonObject = JObject.Parse(json);
         }
-        else
+
+        if(jsonObject == null) //if the persistent file wasn't good
         {
             TextAsset jsonTextAsset = Resources.Load<TextAsset>(jsonFile); // Load in the JSON file as a TextAsset
             if (jsonTextAsset != null) //check if the data has been read correctly
@@ -52,28 +87,25 @@ public class SettingsManager : MonoBehaviour
             }
             else
             {
-                Debug.LogError("Settings file could not be loaded!");
+                Debug.LogError("SettingsManager::PopulateOptions -> Settings file could not be loaded!");
             }
 
         }
 
+        settingsVersion = (string)jsonObject["version"];
         JArray settingsArray = (JArray)jsonObject["settings"]; // get the array of settings as json objects
 
         if (settingsArray != null) // if the json is successfully read in
         {
-            Debug.Log("settings successfully parsed!");
+            Debug.Log("SettingsManager::PopulateOptions -> settings successfully parsed!");
             // Iterate through each object in the "settings" array
             foreach (JObject settingObject in settingsArray)
             {
                 Dictionary<string, object> settingDictionary = settingObject.Properties().ToDictionary(p => p.Name, p => (object)p.Value);
                 settingsList.Add(settingDictionary); // add to list
             }
-
         }
-        else
-        {
-            Debug.LogError("Failed to parse settings data");
-        }
+        else Debug.LogError("SettingsManager::PopulateOptions -> Failed to parse settings data");
     }
 
     /// <summary>
@@ -101,10 +133,10 @@ public class SettingsManager : MonoBehaviour
         }
         else
         {
-            Debug.LogWarning($"Setting with name '{settingName}' not found");
+            Debug.LogWarning($"SettingsManager::GetOption -> Setting with name '{settingName}' not found");
         }
 
-        return new Dictionary<string, object>();
+        throw new Exception("SettingsManager::GetOption -> AN UNKNOWN EXCEPTION HAS OCCURRED");
     }
 
 
@@ -117,22 +149,22 @@ public class SettingsManager : MonoBehaviour
         {
             // Create a JSON object to represent the settings data
             JObject jsonObject = new JObject();
+            jsonObject["version"] = settingsVersion;
             jsonObject["settings"] = new JArray(settingsList.Select(setting =>
                 new JObject(setting.Select(kv => new JProperty(kv.Key, JToken.FromObject(kv.Value))))));
 
             // Convert the JSON object to a JSON string
             string json = jsonObject.ToString(Formatting.Indented);
-            Debug.Log(json);
 
             // Write the JSON string back to the file
             string filePath = Path.Combine(Application.persistentDataPath, jsonFile + ".json");
             File.WriteAllText(filePath, json);
 
-            Debug.Log("Settings saved successfully");
+            Debug.Log("SettingsManager::SaveOptions -> Settings saved successfully");
         }
         else
         {
-            Debug.LogWarning("No settings to save");
+            Debug.LogWarning("SettingsManager::SaveOptions -> No settings to save");
         }
     }
 
@@ -154,12 +186,12 @@ public class SettingsManager : MonoBehaviour
         {
             // Update the value if the setting is found
             settingsList[foundIndex]["value"] = value;
-            Debug.Log($"{settingName} updated with value {value.ToString()}");
+            Debug.Log($"SettingsManager::UpdateSetting -> {settingName} updated with value {value.ToString()}");
 
         }
         else
         {
-            Debug.LogWarning($"Setting with name '{settingName}' not found");
+            Debug.LogWarning($"SettingsManager::UpdateSetting -> Setting with name '{settingName}' not found");
         }
     }
 

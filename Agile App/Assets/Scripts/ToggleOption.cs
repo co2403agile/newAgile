@@ -11,7 +11,7 @@ public class ToggleOption : MonoBehaviour
     public Image backgroundPanel;
 
     private SettingsManager manager;
-
+    
     public void Setup(KeyValuePair<string, int> init)
     {
         manager = FindObjectOfType<SettingsManager>(); //find the setting manager

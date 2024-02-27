@@ -39,7 +39,7 @@ public class MoveMenu : MonoBehaviour
         {
             if (Move_Menu_Direction == menuDirection.Extend)
             {
-                Debug.Log("Extending");
+                Debug.Log("MoveMenu::Update -> Extending");
                 menuPanel.transform.position = Vector3.Lerp(menuPanel.transform.position, menuActivePos.transform.position, moveSpeed * Time.deltaTime);
 
 
@@ -51,7 +51,7 @@ public class MoveMenu : MonoBehaviour
             else
             {
                 menuPanel.transform.position = Vector3.Lerp(menuPanel.transform.position, menuOriginPos.transform.position, moveSpeed * Time.deltaTime);
-                Debug.Log("Retracting");
+                Debug.Log("MoveMenu::Update -> Retracting");
 
 
                 if (menuPanel.transform.localPosition.x < menuOriginPos.transform.localPosition.x * 1+MoveTolerance)
@@ -62,10 +62,9 @@ public class MoveMenu : MonoBehaviour
         }
     }
 
-
     public void MovePanel()
     {
-        Debug.Log("Changing Direction");
+        Debug.Log("MoveMenu::MovePanel -> Changing Direction");
 
         if (Move_Menu_Direction == menuDirection.Extend)  {
             Move_Menu_Direction = menuDirection.Retract;

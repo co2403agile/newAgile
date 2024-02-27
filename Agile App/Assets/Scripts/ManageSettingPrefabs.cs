@@ -24,7 +24,7 @@ public class ManageSettingPrefabs : MonoBehaviour
 
     private void createPrefabSettings()
     {
-        Debug.Log("create prefabs called"); //output shared values
+        Debug.Log("ManageSettingPrefabs::createPrefabSettings -> create prefabs called"); //output shared values
         List<Dictionary<string, object>> settingsList = manager.GetOptions();
 
         if (settingsList.Count != 0) //check if we have any settings
@@ -34,7 +34,7 @@ public class ManageSettingPrefabs : MonoBehaviour
                 switch (setting["type"].ToString())
                 {
                     case "toggle":
-                        Debug.Log($"creating toggle in state {Convert.ToInt32(setting["value"])}"); //output shared values
+                        Debug.Log($"ManageSettingPrefabs::createPrefabSettings ->creating toggle in state {Convert.ToInt32(setting["value"])}"); //output shared values
 
                         // Instantiate UI element from prefab without setting parent
                         GameObject element = Instantiate(togglePrefab);
@@ -51,7 +51,7 @@ public class ManageSettingPrefabs : MonoBehaviour
         }
         else
         {
-            Debug.LogError("no settings where found");
+            Debug.LogError("ManageSettingPrefabs::createPrefabSettings -> no settings where found");
         }
     }
 }

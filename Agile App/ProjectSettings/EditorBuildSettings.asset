@@ -9,11 +9,14 @@ EditorBuildSettings:
     path: Assets/Scenes/HomeScreen.unity
     guid: c54e459f63c664842b9ef0ba12858901
   - enabled: 1
-    path: Assets/Scenes/AR_Building_ViewSreen.unity
+    path: Assets/Scenes/AR_Building_ViewScreen.unity
     guid: 6bdce89659816455b9f906fc62d19910
   - enabled: 1
     path: Assets/Scenes/settings.unity
     guid: d55674ca0e341644db8434ab2f3f1225
+  - enabled: 1
+    path: Assets/Scenes/BuildingPicker.unity
+    guid: 1ac1e073899aad542853d81742458715
   m_configObjects:
     Unity.XR.WindowsMR.Settings: {fileID: 11400000, guid: 744b813df90924c169af73489b8325de,
       type: 2}
