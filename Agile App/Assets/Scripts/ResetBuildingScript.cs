@@ -5,7 +5,7 @@ using UnityEngine;
 public class ResetBuildingScript : MonoBehaviour
 {
     public void reset() {
-        GameObject[] objectsWithTag = GameObject.FindGameObjectsWithTag("Spawnable"); //gets current objects spawned
-        foreach (GameObject obj in objectsWithTag) Destroy(obj);
+        // TODO : Write the reset script
+        
     }
 }

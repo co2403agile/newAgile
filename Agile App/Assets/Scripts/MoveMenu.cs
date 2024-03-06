@@ -1,48 +1,58 @@
-using System.Collections;
-using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.XR.ARFoundation;
 
-
-//script to show and hide hamburger menu
+/* Script to show and hide hamburger menu */
+/* Written by James */
 public class MoveMenu : MonoBehaviour
 {
-    //objects
+    /* The menu panel to be moved */
     public GameObject menuPanel;
-    public GameObject menuOriginPos;
-    public GameObject menuActivePos;
 
-    // used to disable raycasting when menu is open
+    /* The original position of the menu */
+    public GameObject menuOriginPos; 
+    
+    /* The active position of the menu */
+    public GameObject menuActivePos; 
+
+    /* Used to disable raycasting when menu is open */
     [SerializeField] ARRaycastManager raycastManager;
 
-    //move variables
-    public bool Move_Menu_Panel = false; //are we moving the panel, false by default
+    /* Flag indicating whether to move the panel, false by default */
+    public bool Move_Menu_Panel = false; 
+    
     enum menuDirection
     {
         Extend, Retract
     }
-    private menuDirection Move_Menu_Direction = menuDirection.Retract; //direction, retracting by default
+    /* Direction of movement, retracting by default */
+    private menuDirection Move_Menu_Direction = menuDirection.Retract;
 
-    public float moveSpeed = 2; // speed
+    /* Speed of movement */
+    public float moveSpeed = 2;
+
+    /* Tolerance for movement completion */
     public float MoveTolerance = 0.1f;
+
+    /* Start: called before the first frame update */
     void Start()
     {
-        //sets to origin
+        /* Sets the menu panel to its original position */
         menuPanel.transform.position = menuOriginPos.transform.position;
     }
 
+    /* Update: called once per frame */
     void Update()
     {
-        //should we move the menu
+        /* Should we move the menu panel? */
         if (Move_Menu_Panel)
         {
             if (Move_Menu_Direction == menuDirection.Extend)
             {
-                Debug.Log("Extending");
+                Debug.Log("MoveMenu::Update -> Extending");
+                /* Move the menu panel towards the active position */
                 menuPanel.transform.position = Vector3.Lerp(menuPanel.transform.position, menuActivePos.transform.position, moveSpeed * Time.deltaTime);
 
-
+                /* Check if movement is completed */
                 if (menuPanel.transform.localPosition.x > menuActivePos.transform.localPosition.x * 1 - MoveTolerance)
                 {
                     Move_Menu_Panel = false;
@@ -50,11 +60,12 @@ public class MoveMenu : MonoBehaviour
             }
             else
             {
+                /* Move the menu panel towards the original position */
                 menuPanel.transform.position = Vector3.Lerp(menuPanel.transform.position, menuOriginPos.transform.position, moveSpeed * Time.deltaTime);
-                Debug.Log("Retracting");
+                Debug.Log("MoveMenu::Update -> Retracting");
 
-
-                if (menuPanel.transform.localPosition.x < menuOriginPos.transform.localPosition.x * 1+MoveTolerance)
+                /* Check if movement is completed */
+                if (menuPanel.transform.localPosition.x < menuOriginPos.transform.localPosition.x * 1 + MoveTolerance)
                 {
                     Move_Menu_Panel = false;
                 }
@@ -62,24 +73,30 @@ public class MoveMenu : MonoBehaviour
         }
     }
 
-
+    /* MovePanel: toggles menu move direction */
     public void MovePanel()
     {
-        Debug.Log("Changing Direction");
+        Debug.Log("MoveMenu::MovePanel -> Changing Direction");
 
-        if (Move_Menu_Direction == menuDirection.Extend)  {
+        /* Change the direction of movement based on current direction */
+        if (Move_Menu_Direction == menuDirection.Extend)
+        {
+            /* Set direction to retracting */
             Move_Menu_Direction = menuDirection.Retract;
-            raycastManager.enabled = true;
-        }
 
-        else  {
+            /* Enable raycasting */
+            raycastManager.enabled = true; 
+        }
+        else
+        {
+            /* Set direction to extending */
             Move_Menu_Direction = menuDirection.Extend;
+            
+            /* Disable raycasting */
             raycastManager.enabled = false;
         }
 
-        Move_Menu_Panel = true;
+        /* Set the flag to start moving the panel */
+        Move_Menu_Panel = true; 
     }
-
-
-
 }

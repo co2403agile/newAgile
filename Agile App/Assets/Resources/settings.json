@@ -1,0 +1,25 @@
+{
+  "version": "0003",
+  "settings": [
+    {
+      "type": "toggle",
+      "name": "enable sound",
+      "value": 0
+    },
+	{
+      "type": "toggle",
+      "name": "magnifier",
+      "value": 0
+    },
+	{
+      "type": "toggle",
+      "name": "bold text",
+      "value": 0
+    },
+	{
+      "type": "toggle",
+      "name": "bigger text",
+      "value": 0
+    }
+  ]
+}

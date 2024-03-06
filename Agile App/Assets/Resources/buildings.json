@@ -1,0 +1,110 @@
+{
+  "buildings": [
+    {
+      "buildingName": "Library",
+      "floors": [
+        {
+			"floorPrefabName": "Library0"
+		},
+		{
+			"floorPrefabName": "Library1"
+		},
+		{
+			"floorPrefabName": "Library2"
+		},
+		{
+			"floorPrefabName": "Library3"
+		}
+      ]
+    },
+	{
+      "buildingName": "Kirkham",
+	  "floors": [
+        {
+			"floorPrefabName": "Kirkham0"
+		}
+      ]
+    },
+	{
+      "buildingName": "Media Factory",
+	  "floors": [
+        {
+			"floorPrefabName": "mediaFactory0"
+		},
+		{
+			"floorPrefabName": "mediaFactory1"
+		},
+		{
+			"floorPrefabName": "mediaFactory2"
+		}
+      ]
+    },
+	{
+      "buildingName": "C&T Building (WIP)",
+      "floors": [
+        {
+			"floorPrefabName": "C&T0"
+		},
+		{
+			"floorPrefabName": "C&T1"
+		},
+		{
+			"floorPrefabName": "C&T2"
+		}
+      ]
+    },
+	{
+      "buildingName": "Harris Building (WIP)",
+      "floors": [
+        {
+			"floorPrefabName": "Harris0"
+		},
+		{
+			"floorPrefabName": "Harris1"
+		},
+		{
+			"floorPrefabName": "Harris2"
+		}
+      ]
+    },
+	{
+      "buildingName": "EIC Building (WIP)",
+      "floors": [
+        {
+			"floorPrefabName": "EIC0"
+		},
+		{
+			"floorPrefabName": "EIC1"
+		}
+      ]
+    },
+	{
+      "buildingName": "Livesey Building (WIP)",
+      "floors": [
+        {
+			"floorPrefabName": "Livesey0"
+		},
+		{
+			"floorPrefabName": "Livesey1"
+		},
+		{
+			"floorPrefabName": "Livesey2"
+		}
+      ]
+    },
+	{
+      "buildingName": "Greenbank Building (WIP)",
+      "floors": [
+        {
+			"floorPrefabName": "Greenbank0"
+		},
+		{
+			"floorPrefabName": "Greenbank1"
+		},
+		{
+			"floorPrefabName": "Greenbank2"
+		}
+      ]
+    },
+  ]
+}
