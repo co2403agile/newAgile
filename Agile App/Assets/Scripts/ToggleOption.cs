@@ -4,40 +4,43 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
+/* ToggleOption: Manages the appearance and behavior of a toggle switch UI element for setting options. */
+/*Written by James */
+
 public class ToggleOption : MonoBehaviour
 {
-    public Toggle toggle;
-    public TextMeshProUGUI label;
-    public Image backgroundPanel;
+    public Toggle toggle; // Reference to the Toggle component
+    public TextMeshProUGUI label; // Reference to the TextMeshProUGUI component for the label
+    public Image backgroundPanel; // Reference to the Image component for the background panel
+    private SettingsManager manager; // Reference to the SettingsManager script
 
-    private SettingsManager manager;
-    
+
+    /* Setup: Initializes the toggle switch with the provided initial values. */
     public void Setup(KeyValuePair<string, int> init)
     {
-        manager = FindObjectOfType<SettingsManager>(); //find the setting manager
+        /* Find the SettingsManager object */
+        manager = FindObjectOfType<SettingsManager>(); 
 
-        label.text = init.Key; //sets label
+        /* Set the label text */
+        label.text = init.Key; 
 
-        //currently only manages boolean settings
-        toggle.isOn = Convert.ToBoolean(init.Value); //sets state of switch
+        /* Set the toggle state based on the initial value (currently only manages boolean settings) */
+        toggle.isOn = Convert.ToBoolean(init.Value);
 
-        toggle.onValueChanged.AddListener(OnToggleValueChanged); //creates the observer
+        /* Add a listener to the toggle's value changed event */
+        toggle.onValueChanged.AddListener(OnToggleValueChanged);
+
+        /* Call the value changed event handler initially */
         OnToggleValueChanged(toggle.isOn);
-
     }
 
-    //changes color based on the state
+    /* OnToggleValueChanged: Handles the value changed event of the toggle switch. */
     void OnToggleValueChanged(bool isOn)
     {
+        /* Update the setting value in the SettingsManager */
         manager.UpdateSetting(label.text, (object)Convert.ToInt32(isOn));
-        if (isOn)
-        {
-            backgroundPanel.color = Color.green;
-        }
-        else
-        {
-            backgroundPanel.color = Color.red;
-        }
-    }
 
+        /* Change the background panel color based on the toggle state */
+        backgroundPanel.color = isOn ? Color.green : Color.red;
+    }
 }

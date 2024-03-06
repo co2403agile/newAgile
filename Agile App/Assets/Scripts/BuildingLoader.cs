@@ -4,43 +4,60 @@ using Newtonsoft.Json.Linq;
 
 public class BuildingLoader : MonoBehaviour
 {
-    public string buildingFilename;
-    public BuildingPicker buildingPicker;
+    public string buildingFilename;  // The filename of the JSON file containing building data
+    public BuildingPicker buildingPicker;  // Reference to the BuildingPicker script to pass the loaded building data
 
-    // Start is called before the first frame update
+
+    /* Start is called before the first frame update */
     void Start()
     {
+        /* Initialize JSON object */
         JObject jsonObject = null;
 
-        TextAsset jsonTextAsset = Resources.Load<TextAsset>(buildingFilename); // Load in the JSON file as a TextAsset
-        if (jsonTextAsset != null) //check if the data has been read correctly
+        /* Load the JSON file as a TextAsset */
+        TextAsset jsonTextAsset = Resources.Load<TextAsset>(buildingFilename);
+
+        /* Check if the data has been read correctly */
+        if (jsonTextAsset != null)
         {
-            jsonObject = JObject.Parse(jsonTextAsset.text); // Parse the text as a json object
+            /* Parse the text as a JSON object */
+            jsonObject = JObject.Parse(jsonTextAsset.text);
         }
         else
         {
+            /* Log error if the file could not be loaded */
             Debug.LogError("BuildingLoader::Start -> " + buildingFilename + " file could not be loaded!");
             return;
         }
 
-        JArray buildingsArray = (JArray)jsonObject["buildings"]; // get the array of settings as json objects
+        /* Get the array of building settings as JSON objects */
+        JArray buildingsArray = (JArray)jsonObject["buildings"];
 
-        if (buildingsArray != null) // if the json is successfully read in
+        /* Check if the JSON is successfully read */
+        if (buildingsArray != null)
         {
-            Debug.Log("BuildingLoader::Start -> buildings successfully parsed.");
+            /* Log success message */
+            Debug.Log("BuildingLoader::Start -> Buildings successfully parsed.");
 
+            /* Create a list to store building names */
             List<string> buildings = new List<string>();
+
+            /* Iterate through each building object in the array */
             foreach (JObject buildingObject in buildingsArray)
             {
-                Debug.Log("BuildingLoader::Start -> adding " + buildingObject["buildingName"]?.ToString() + " to list.");
-                buildings.Add( buildingObject["buildingName"]?.ToString());
+                /* Log adding each building to the list */
+                Debug.Log("BuildingLoader::Start -> Adding " + buildingObject["buildingName"]?.ToString() + " to the list.");
+
+                /* Add the building name to the list */
+                buildings.Add(buildingObject["buildingName"]?.ToString());
             }
 
-            //Pass list to building Picker script
+            /* Pass the list of building names to the BuildingPicker script */
             buildingPicker.Setup(buildings);
         }
         else
         {
+            /* Log error if failed to parse building data */
             Debug.LogError("BuildingLoader::Start -> Failed to parse buildings data");
         }
     }

@@ -6,68 +6,92 @@ public class InputManager : MonoBehaviour
 {
     // TODO: ADD SUPPORT FOR ROTATION AND SCALE
 
-    [SerializeField] ARRaycastManager m_RaycastManager;
-    List<ARRaycastHit> m_Hits = new List<ARRaycastHit>();
-    Camera m_ArCam;
+    /* Reference to the ARRaycastManager for raycasting */
+    [SerializeField] ARRaycastManager m_RaycastManager; 
 
-    private Vector3 posVector3 = new Vector3(0,0,0);
-    private float scale = 1;
+    /* List to store raycast hits */
+    List<ARRaycastHit> m_Hits = new List<ARRaycastHit>();
+
+    /* Reference to the AR Camera */
+    Camera m_ArCam; 
+
+    /* Position vector for raycast hit */
+    private Vector3 posVector3 = new Vector3(0, 0, 0); 
+
+    /* Scale of the object (not implemented yet) */
+    private float scale = 1; 
+
+    /* Rotation of the object (not implemented yet) */
     private float rotation = 0;
 
-    private bool raycastFlag = false;
+    /* Flag to indicate if a raycast has been performed */
+    private bool raycastFlag = false; 
 
+    /* Delegate for raycast update event */
     public delegate void RayCastUpdateHandler();
+
+    /* Event triggered when raycast updates */
     public event RayCastUpdateHandler onUpdate;
 
-
-    // Start is called before the first frame update
+    /* Start: called before the first frame update */
     void Start()
     {
-        m_ArCam = GameObject.Find("AR Camera").GetComponent<Camera>(); //finds ar camera object
+        /* Find AR Camera object */
+        m_ArCam = GameObject.Find("AR Camera").GetComponent<Camera>(); 
     }
 
-    // Update is called once per frame
+    /* Update: called once per frame */
     void Update()
     {
-        // Base Case: Check if there are no touches; if true, exit the function.
+        /* Base Case: Check if there are no touches; if true, exit the function. */
         if (Input.touchCount == 0) return;
 
-        // Declare variables
+        /* Declare variables */
         RaycastHit hit;
         Ray ray = m_ArCam.ScreenPointToRay(Input.GetTouch(0).position);
 
-        // Check if there is a collision with a plane using ARRaycastManager
+        /* Check if there is a collision with a plane using ARRaycastManager */
         if (m_RaycastManager.Raycast(Input.GetTouch(0).position, m_Hits))
         {
-            // Check if touch has just begun and no object is spawned yet
+            /* Check if touch has just begun and no object is spawned yet */
             if (Input.GetTouch(0).phase == TouchPhase.Began)
             {
-                // Check if there's a raycast hit
+                /* Check if there's a raycast hit */
                 if (Physics.Raycast(ray, out hit))
                 {
-                    // put collision point into posVector3
+                    /* Put collision point into posVector3 */
                     posVector3 = hit.point;
                 }
             }
         }
 
-        raycastFlag = true; //sets the flag to show other scripts that the user has cast a ray
+        /* Set the flag to indicate that a raycast has been performed */
+        raycastFlag = true; 
 
-        onUpdate.Invoke(); // calls every function that relies on the raycast updates
+        /* Call every function that relies on the raycast updates */
+        onUpdate.Invoke();
     }
 
-    public Vector3 GetPos() {
+    /* GetPos: Get the position vector */
+    public Vector3 GetPos()
+    {
         return posVector3;
     }
 
-    public float GetScale() {
+    /* GetScale: Get the scale factor (not implemented yet) */
+    public float GetScale()
+    {
         return scale;
     }
-    public float GetRotation() {
+
+    /* GetRotation: Get the rotation angle (not implemented yet) */
+    public float GetRotation()
+    {
         return rotation;
     }
 
-    public bool GetRaycastFlag()  // used when you want to check if the user has raycasted once
+    /* GetRaycastFlag: Get the raycast flag, used to check if the user has raycasted once */
+    public bool GetRaycastFlag()
     {
         return raycastFlag;
     }

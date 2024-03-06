@@ -7,7 +7,5 @@ public class ResetBuildingScript : MonoBehaviour
     public void reset() {
         // TODO : Write the reset script
         
-        /*GameObject[] objectsWithTag = GameObject.FindGameObjectsWithTag("Spawnable"); //gets current objects spawned
-        foreach (GameObject obj in objectsWithTag) Destroy(obj);*/
     }
 }

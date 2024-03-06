@@ -4,7 +4,10 @@ using UnityEngine;
 
 public class ExitScript : MonoBehaviour
 {
-    public void Quit() {
+    /* Method to quit the application */
+    public void Quit()
+    {
+        /* Quit the application */
         Application.Quit();
     }
 }
